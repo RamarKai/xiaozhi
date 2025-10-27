@@ -35,9 +35,18 @@ set(SOURCES "audio/audio_codec.cc"
             "device_state_event.cc"
             "assets.cc"
             "main.cc"
+            "boards/hzx_dev_oled/gif/anger.c"
+            "boards/hzx_dev_oled/gif/blink_once.c"
+            "boards/hzx_dev_oled/gif/blink_twice.c"
+            "boards/hzx_dev_oled/gif/disdain.c"
+            "boards/hzx_dev_oled/gif/excited.c"
+            "boards/hzx_dev_oled/gif/fear.c"
+            "boards/hzx_dev_oled/gif/look_left.c"
+            "boards/hzx_dev_oled/gif/look_right.c"
+            "boards/hzx_dev_oled/gif/sad.c"
             )
 
-set(INCLUDE_DIRS "." "display" "display/lvgl_display" "display/lvgl_display/jpg" "audio" "protocols")
+set(INCLUDE_DIRS "." "display" "display/lvgl_display" "display/lvgl_display/jpg" "audio" "protocols" "boards/hzx_dev_oled/gif")
 
 # Add board common files
 file(GLOB BOARD_COMMON_SOURCES ${CMAKE_CURRENT_SOURCE_DIR}/boards/common/*.cc)
@@ -518,6 +527,8 @@ elseif(CONFIG_BOARD_TYPE_WTP4C5MP07S)
     set(BUILTIN_TEXT_FONT font_puhui_basic_30_4)
     set(BUILTIN_ICON_FONT font_awesome_30_4)
     set(DEFAULT_EMOJI_COLLECTION twemoji_64)
+elseif(CONFIG_BOARD_TYPE_HZX_DEV_OLED)
+    set(BOARD_TYPE "hzx_dev_oled")
 endif()
 
 file(GLOB BOARD_SOURCES

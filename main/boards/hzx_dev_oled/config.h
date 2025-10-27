@@ -37,21 +37,20 @@
 #define DISPLAY_SCL_PIN GPIO_NUM_8
 #define DISPLAY_WIDTH 128
 
-// #if CONFIG_OLED_SSD1306_128X32
-// #define DISPLAY_HEIGHT 32
-// #elif CONFIG_OLED_SSD1306_128X64
-// #define DISPLAY_HEIGHT 64
-// #else
-// #error "未选择 OLED 屏幕类型"
-// #endif
-
+#if CONFIG_OLED_SSD1306_128X32
+#define DISPLAY_HEIGHT 32
+#elif CONFIG_OLED_SSD1306_128X64
 #define DISPLAY_HEIGHT 64
+#elif CONFIG_OLED_SH1106_128X64
+#define DISPLAY_HEIGHT 64
+#define SH1106
+#else
+// 默认使用 SSD1306 128x64
+#define DISPLAY_HEIGHT 64
+#endif
 
 #define DISPLAY_MIRROR_X true
 #define DISPLAY_MIRROR_Y true
-
-#define ML307_RX_PIN GPIO_NUM_5
-#define ML307_TX_PIN GPIO_NUM_6
 
 // A MCP Test: Control a lamp
 #define LAMP_GPIO GPIO_NUM_18

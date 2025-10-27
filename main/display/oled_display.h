@@ -27,6 +27,11 @@ private:
     void SetupUI_128x64();
     void SetupUI_128x32();
 
+protected:
+    // 为子类提供访问私有成员的方法
+    lv_obj_t* GetContent() { return content_; }
+    lv_obj_t* GetChatMessageLabel() { return chat_message_label_; }
+
 public:
     OledDisplay(esp_lcd_panel_io_handle_t panel_io, esp_lcd_panel_handle_t panel, int width, int height, bool mirror_x, bool mirror_y);
     ~OledDisplay();

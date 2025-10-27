@@ -421,6 +421,9 @@ choice BOARD_TYPE
     config BOARD_TYPE_WTP4C5MP07S
         bool "Wireless-Tag WTP4C5MP07S"
         depends on IDF_TARGET_ESP32P4
+    config BOARD_TYPE_HZX_DEV_OLED
+        bool "HZX Dev OLED (HZX开发板 OLED版本)"
+        depends on IDF_TARGET_ESP32S3
 endchoice
 
 choice
