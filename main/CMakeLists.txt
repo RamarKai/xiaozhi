@@ -44,6 +44,8 @@ set(SOURCES "audio/audio_codec.cc"
             "boards/hzx_dev_oled/gif/look_left.c"
             "boards/hzx_dev_oled/gif/look_right.c"
             "boards/hzx_dev_oled/gif/sad.c"
+            "boards/hzx_dev_oled/gif/nomal.c"
+            "boards/hzx_dev_oled/gif/sleep.c"
             )
 
 set(INCLUDE_DIRS "." "display" "display/lvgl_display" "display/lvgl_display/jpg" "audio" "protocols" "boards/hzx_dev_oled/gif")

@@ -1,4 +1,4 @@
-#include "wifi_board.h"
+#include "dual_network_board.h"
 #include "codecs/no_audio_codec.h"
 #include "display/oled_display.h"
 #include "emotion_display.h"
@@ -17,13 +17,9 @@
 #include <esp_lcd_panel_ops.h>
 #include <esp_lcd_panel_vendor.h>
 
-// #ifdef SH1106
-// #include <esp_lcd_panel_sh1106.h>
-// #endif
-
 #define TAG "hzx_dev_oled"
 
-class hzx_dev_oled : public WifiBoard
+class hzx_dev_oled : public DualNetworkBoard
 {
 private:
     i2c_master_bus_handle_t display_i2c_bus_;
@@ -89,7 +85,6 @@ private:
 #endif
         ESP_LOGI(TAG, "SSD1306 driver installed");
 
-        // Reset the display
         ESP_ERROR_CHECK(esp_lcd_panel_reset(panel_));
         if (esp_lcd_panel_init(panel_) != ESP_OK)
         {
@@ -99,7 +94,6 @@ private:
         }
         ESP_ERROR_CHECK(esp_lcd_panel_invert_color(panel_, false));
 
-        // Set the display to on
         ESP_LOGI(TAG, "Turning display on");
         ESP_ERROR_CHECK(esp_lcd_panel_disp_on_off(panel_, true));
 
@@ -111,10 +105,24 @@ private:
         boot_button_.OnClick([this]()
                              {
             auto& app = Application::GetInstance();
-            if (app.GetDeviceState() == kDeviceStateStarting && !WifiStation::GetInstance().IsConnected()) {
-                ResetWifiConfiguration();
+            if (GetNetworkType() == NetworkType::WIFI) {
+                if (app.GetDeviceState() == kDeviceStateStarting && !WifiStation::GetInstance().IsConnected()) {
+                    // cast to WifiBoard
+                    auto& wifi_board = static_cast<WifiBoard&>(GetCurrentBoard());
+                    wifi_board.ResetWifiConfiguration();
+                }
             }
             app.ToggleChatState(); });
+        boot_button_.OnDoubleClick([this]()
+                                   {
+            auto& app = Application::GetInstance();
+            // 允许在启动、WiFi配置、空闲状态下切换网络模式
+            if (app.GetDeviceState() == kDeviceStateStarting || 
+                app.GetDeviceState() == kDeviceStateWifiConfiguring || 
+                app.GetDeviceState() == kDeviceStateIdle) {
+                SwitchNetworkType();
+            } });
+
         touch_button_.OnPressDown([this]()
                                   { Application::GetInstance().StartListening(); });
         touch_button_.OnPressUp([this]()
@@ -148,17 +156,30 @@ private:
         volume_down_button_.OnLongPress([this]()
                                         {
             GetAudioCodec()->SetOutputVolume(0);
-            GetDisplay()->ShowNotification(Lang::Strings::MUTED); });
+            GetDisplay()->ShowNotification(Lang::Strings::MUTED);
+            
+            // 添加4G模块调试信息
+            if (GetNetworkType() == NetworkType::ML307) {
+                auto display = GetDisplay();
+                display->ShowNotification("Checking 4G status...");
+                
+                // 通过GetCurrentBoard获取ML307板卡并检查状态
+                ESP_LOGI(TAG, "Network type: ML307");
+                ESP_LOGI(TAG, "Attempting to get modem status...");
+                
+                vTaskDelay(pdMS_TO_TICKS(2000));
+                display->ShowNotification("4G debug check done");
+            } });
     }
 
-    // 物联网初始化，逐步迁移到 MCP 协议
     void InitializeTools()
     {
         static LampController lamp(LAMP_GPIO);
     }
 
 public:
-    hzx_dev_oled() : boot_button_(BOOT_BUTTON_GPIO),
+    hzx_dev_oled() : DualNetworkBoard(ML307_TX_PIN, ML307_RX_PIN, GPIO_NUM_NC),
+                     boot_button_(BOOT_BUTTON_GPIO),
                      touch_button_(TOUCH_BUTTON_GPIO),
                      volume_up_button_(VOLUME_UP_BUTTON_GPIO),
                      volume_down_button_(VOLUME_DOWN_BUTTON_GPIO)

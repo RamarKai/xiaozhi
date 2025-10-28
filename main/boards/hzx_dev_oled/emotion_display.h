@@ -13,6 +13,8 @@
 #include "gif/look_left.h"
 #include "gif/look_right.h"
 #include "gif/sad.h"
+#include "gif/nomal.h"
+#include "gif/sleep.h"
 
 /**
  * @brief OLED GIF表情显示类

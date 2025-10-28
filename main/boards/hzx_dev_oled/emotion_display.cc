@@ -16,9 +16,9 @@
 const EmotionDisplay::EmotionMap EmotionDisplay::emotion_maps_[] = {
 
     // 中性/平静类表情
-    {"neutral", &blink_once_gif},
-    {"relaxed", &blink_twice_gif},
-    {"sleepy", &look_left_gif},
+    {"neutral", &nomal_gif},
+    {"relaxed", &nomal_gif},
+    {"sleepy", &sleep_gif},
 
     // 积极/开心类表情
     {"happy", &excited_gif},
@@ -26,7 +26,7 @@ const EmotionDisplay::EmotionMap EmotionDisplay::emotion_maps_[] = {
     {"funny", &excited_gif},
     {"loving", &excited_gif},
     {"confident", &excited_gif},
-    {"winking", &excited_gif},
+    {"winking", &blink_twice_gif},
     {"cool", &excited_gif},
     {"delicious", &excited_gif},
     {"kissy", &excited_gif},
@@ -44,7 +44,7 @@ const EmotionDisplay::EmotionMap EmotionDisplay::emotion_maps_[] = {
     {"shocked", &excited_gif},
 
     // 思考/困惑类表情
-    {"thinking", &look_right_gif},
+    {"thinking", &blink_once_gif},
     {"confused", &disdain_gif},
     {"embarrassed", &fear_gif},
 
