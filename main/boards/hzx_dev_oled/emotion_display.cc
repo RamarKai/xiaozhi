@@ -12,7 +12,7 @@
 
 #define TAG "EmotionDisplay"
 
-// 表情映射表 - 将表情名称映射到对应的GIF
+// 表情映射表
 const EmotionDisplay::EmotionMap EmotionDisplay::emotion_maps_[] = {
 
     // 中性/平静类表情
@@ -48,8 +48,7 @@ const EmotionDisplay::EmotionMap EmotionDisplay::emotion_maps_[] = {
     {"confused", &disdain_gif},
     {"embarrassed", &fear_gif},
 
-    {nullptr, nullptr} // 结束标记
-};
+    {nullptr, nullptr}};
 
 EmotionDisplay::EmotionDisplay(esp_lcd_panel_io_handle_t panel_io, esp_lcd_panel_handle_t panel,
                                int width, int height, bool mirror_x, bool mirror_y)
@@ -85,7 +84,7 @@ void EmotionDisplay::SetupGifContainer()
 {
     DisplayLockGuard lock(this);
 
-    // 直接在屏幕上创建表情容器，而不是在content中
+    // 在屏幕上创建表情容器
     auto screen = lv_screen_active();
     emotion_content_ = lv_obj_create(screen);
 

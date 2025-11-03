@@ -163,7 +163,6 @@ private:
                 auto display = GetDisplay();
                 display->ShowNotification("Checking 4G status...");
                 
-                // 通过GetCurrentBoard获取ML307板卡并检查状态
                 ESP_LOGI(TAG, "Network type: ML307");
                 ESP_LOGI(TAG, "Attempting to get modem status...");
                 

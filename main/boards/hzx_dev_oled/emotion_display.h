@@ -31,18 +31,18 @@ public:
 
     virtual ~EmotionDisplay() = default;
 
-    // 重写表情设置方法
+    // 表情设置方法
     virtual void SetEmotion(const char *emotion) override;
 
-    // 重写聊天消息设置方法
+    // 聊天消息设置方法
     virtual void SetChatMessage(const char *role, const char *content) override;
 
 private:
     void SetupGifContainer();
     void HideUnnecessaryElements();
 
-    lv_obj_t *emotion_gif_;     ///< GIF表情组件
-    lv_obj_t *emotion_content_; ///< 表情内容容器
+    lv_obj_t *emotion_gif_;     // GIF表情组件
+    lv_obj_t *emotion_content_; // 表情内容容器
 
     // 表情映射结构
     struct EmotionMap
