@@ -59,4 +59,62 @@
 #define ML307_TX_PIN GPIO_NUM_15
 #define ML307_RX_PIN GPIO_NUM_16
 
+// SD卡配置 (默认使用SDSPI模式)
+// 注意：如果需要使用SDMMC模式，请将SDCARD_SDMMC_ENABLED设为1并相应配置引脚
+
+// SDMMC 1-bit/4-bit模式 (默认禁用)
+#ifndef SDCARD_SDMMC_ENABLED
+#define SDCARD_SDMMC_ENABLED 0
+#endif
+
+// SDMMC总线宽度：1或4
+#ifndef SDCARD_SDMMC_BUS_WIDTH
+#define SDCARD_SDMMC_BUS_WIDTH 1
+#endif
+
+// SDMMC引脚分配 (启用SDMMC时需要设置实际引脚)
+#ifndef SDCARD_SDMMC_CLK_PIN
+#define SDCARD_SDMMC_CLK_PIN GPIO_NUM_14
+#endif
+#ifndef SDCARD_SDMMC_CMD_PIN
+#define SDCARD_SDMMC_CMD_PIN GPIO_NUM_12
+#endif
+#ifndef SDCARD_SDMMC_D0_PIN
+#define SDCARD_SDMMC_D0_PIN GPIO_NUM_11
+#endif
+#ifndef SDCARD_SDMMC_D1_PIN
+#define SDCARD_SDMMC_D1_PIN GPIO_NUM_10
+#endif
+#ifndef SDCARD_SDMMC_D2_PIN
+#define SDCARD_SDMMC_D2_PIN GPIO_NUM_9
+#endif
+#ifndef SDCARD_SDMMC_D3_PIN
+#define SDCARD_SDMMC_D3_PIN GPIO_NUM_8
+#endif
+
+// SDSPI模式 (使用SPI总线，默认启用)
+#ifndef SDCARD_SDSPI_ENABLED
+#define SDCARD_SDSPI_ENABLED 1
+#endif
+#ifndef SDCARD_SPI_HOST
+#define SDCARD_SPI_HOST SPI2_HOST
+#endif
+#ifndef SDCARD_SPI_MOSI
+#define SDCARD_SPI_MOSI GPIO_NUM_38
+#endif
+#ifndef SDCARD_SPI_MISO
+#define SDCARD_SPI_MISO GPIO_NUM_39
+#endif
+#ifndef SDCARD_SPI_SCLK
+#define SDCARD_SPI_SCLK GPIO_NUM_47
+#endif
+#ifndef SDCARD_SPI_CS
+#define SDCARD_SPI_CS GPIO_NUM_48
+#endif
+
+// SD卡挂载点
+#ifndef SDCARD_MOUNT_POINT
+#define SDCARD_MOUNT_POINT "/sdcard"
+#endif
+
 #endif // _BOARD_CONFIG_H_

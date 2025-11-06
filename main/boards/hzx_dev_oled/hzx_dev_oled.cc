@@ -17,6 +17,12 @@
 #include <esp_lcd_panel_ops.h>
 #include <esp_lcd_panel_vendor.h>
 
+#include <esp_vfs_fat.h>
+#include <sdmmc_cmd.h>
+#include <driver/sdmmc_host.h>
+#include <driver/sdspi_host.h>
+#include "sd_pwr_ctrl_by_on_chip_ldo.h"
+
 #define TAG "hzx_dev_oled"
 
 class hzx_dev_oled : public DualNetworkBoard
@@ -176,6 +182,88 @@ private:
         static LampController lamp(LAMP_GPIO);
     }
 
+    void InitializeSdCard()
+    {
+#if SDCARD_SDMMC_ENABLED
+        // SDMMC模式初始化
+        sdmmc_host_t host = SDMMC_HOST_DEFAULT();
+        sdmmc_slot_config_t slot_config = SDMMC_SLOT_CONFIG_DEFAULT();
+
+        // 配置引脚
+        slot_config.clk = SDCARD_SDMMC_CLK_PIN;
+        slot_config.cmd = SDCARD_SDMMC_CMD_PIN;
+        slot_config.d0 = SDCARD_SDMMC_D0_PIN;
+        slot_config.width = SDCARD_SDMMC_BUS_WIDTH;
+
+        if (SDCARD_SDMMC_BUS_WIDTH == 4)
+        {
+            slot_config.d1 = SDCARD_SDMMC_D1_PIN;
+            slot_config.d2 = SDCARD_SDMMC_D2_PIN;
+            slot_config.d3 = SDCARD_SDMMC_D3_PIN;
+        }
+
+        esp_vfs_fat_sdmmc_mount_config_t mount_config = {
+            .format_if_mount_failed = false,
+            .max_files = 5,
+            .allocation_unit_size = 0,
+            .disk_status_check_enable = true,
+        };
+
+        sdmmc_card_t *card;
+        esp_err_t ret = esp_vfs_fat_sdmmc_mount(SDCARD_MOUNT_POINT, &host, &slot_config, &mount_config, &card);
+
+        if (ret == ESP_OK)
+        {
+            sdmmc_card_print_info(stdout, card);
+            ESP_LOGI(TAG, "SD card mounted at %s (SDMMC)", SDCARD_MOUNT_POINT);
+        }
+        else
+        {
+            ESP_LOGW(TAG, "Failed to mount SD card (SDMMC): %s", esp_err_to_name(ret));
+        }
+
+#elif SDCARD_SDSPI_ENABLED
+        // SDSPI模式初始化
+        sdmmc_host_t host = SDSPI_HOST_DEFAULT();
+        spi_bus_config_t bus_cfg = {
+            .mosi_io_num = SDCARD_SPI_MOSI,
+            .miso_io_num = SDCARD_SPI_MISO,
+            .sclk_io_num = SDCARD_SPI_SCLK,
+            .quadwp_io_num = -1,
+            .quadhd_io_num = -1,
+            .max_transfer_sz = 4000,
+        };
+
+        ESP_ERROR_CHECK_WITHOUT_ABORT(spi_bus_initialize((spi_host_device_t)SDCARD_SPI_HOST, &bus_cfg, SPI_DMA_CH_AUTO));
+
+        sdspi_device_config_t slot_config = SDSPI_DEVICE_CONFIG_DEFAULT();
+        slot_config.gpio_cs = SDCARD_SPI_CS;
+        slot_config.host_id = (spi_host_device_t)SDCARD_SPI_HOST;
+
+        esp_vfs_fat_sdmmc_mount_config_t mount_config = {
+            .format_if_mount_failed = false,
+            .max_files = 5,
+            .allocation_unit_size = 0,
+            .disk_status_check_enable = true,
+        };
+
+        sdmmc_card_t *card;
+        esp_err_t ret = esp_vfs_fat_sdspi_mount(SDCARD_MOUNT_POINT, &host, &slot_config, &mount_config, &card);
+
+        if (ret == ESP_OK)
+        {
+            sdmmc_card_print_info(stdout, card);
+            ESP_LOGI(TAG, "SD card mounted at %s (SDSPI)", SDCARD_MOUNT_POINT);
+        }
+        else
+        {
+            ESP_LOGW(TAG, "Failed to mount SD card (SDSPI): %s", esp_err_to_name(ret));
+        }
+#else
+        ESP_LOGI(TAG, "SD card disabled (enable SDCARD_SDMMC_ENABLED or SDCARD_SDSPI_ENABLED)");
+#endif
+    }
+
 public:
     hzx_dev_oled() : DualNetworkBoard(ML307_TX_PIN, ML307_RX_PIN, GPIO_NUM_NC),
                      boot_button_(BOOT_BUTTON_GPIO),
@@ -187,6 +275,7 @@ public:
         InitializeSsd1306Display();
         InitializeButtons();
         InitializeTools();
+        InitializeSdCard();
     }
 
     virtual Led *GetLed() override
